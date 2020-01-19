@@ -64,6 +64,7 @@ const BOOTCAMP_SCHEMA = new mongoose.Schema({
       "Mobile Development",
       "UI/UX",
       "Data Science",
+      "Business",
       "Project Manager",
       "Other"
     ]
