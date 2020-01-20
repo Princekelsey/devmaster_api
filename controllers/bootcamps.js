@@ -1,3 +1,4 @@
+const geoCoder = require("../utilis/geocoder");
 const BootCamp = require("../models/Bootcamp");
 const ErrorResponse = require("../utilis/errorResponse");
 const asyncHandler = require("../middleware/async");
@@ -6,9 +7,18 @@ const asyncHandler = require("../middleware/async");
 // @route   GET /api/v1/bootcamps
 // @access  Public
 exports.getAllBootCamps = asyncHandler(async (req, res, next) => {
-  const bootCamps = await BootCamp.find();
+  let querry;
+  let querryStr = JSON.stringify(req.query);
+  querryStr = querryStr.replace(
+    /\b(gt|gte|lt|lte|in)\b/g,
+    match => `$${match}`
+  );
+
+  querry = BootCamp.find(JSON.parse(querryStr));
+  const bootCamps = await querry;
+
   res.status(200).json({
-    sucess: true,
+    success: true,
     count: bootCamps.length,
     data: bootCamps
   });
@@ -26,7 +36,38 @@ exports.getBootCamp = asyncHandler(async (req, res, next) => {
     );
   }
 
-  res.status(200).json({ sucess: true, data: bootCamp });
+  res.status(200).json({ success: true, data: bootCamp });
+});
+
+// @desc    Get bootcamp with radius
+// @route   GET /api/v1/bootcamps/radius/:zipcode/:distance
+// @access  Public
+exports.getBootCampsInRadius = asyncHandler(async (req, res, next) => {
+  const { zipcode, distance } = req.params;
+  // get lat and lon
+  const loc = await geoCoder.geocode(zipcode);
+  const lon = loc[0].longitude;
+  const lat = loc[0].latitude;
+
+  // get radius by dividing distance by earth's radius
+  const radius = distance / 3963;
+
+  const bootCamps = await BootCamp.find({
+    location: { $geoWithin: { $centerSphere: [[lon, lat], radius] } }
+  });
+
+  if (bootCamps.length < 1) {
+    return res.status(200).json({
+      success: true,
+      count: bootCamps.length,
+      data: "No Bootcamp found"
+    });
+  }
+  res.status(200).json({
+    success: true,
+    count: bootCamps.length,
+    data: bootCamps
+  });
 });
 
 // @desc    Create a new bootcamp
@@ -35,7 +76,7 @@ exports.getBootCamp = asyncHandler(async (req, res, next) => {
 exports.createBootCamp = asyncHandler(async (req, res, next) => {
   const bootCamp = await BootCamp.create(req.body);
   res.status(201).json({
-    sucess: true,
+    success: true,
     data: bootCamp
   });
 });
@@ -54,7 +95,7 @@ exports.updateBootCamp = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
-  res.status(200).json({ sucess: true, data: bootCamp });
+  res.status(200).json({ success: true, data: bootCamp });
 });
 
 // @desc    Delete bootcamp
@@ -68,5 +109,5 @@ exports.deleteBootCamp = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
-  res.status(200).json({ sucess: true, data: "Bootcamp deleted" });
+  res.status(200).json({ success: true, data: "Bootcamp deleted" });
 });
