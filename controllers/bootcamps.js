@@ -17,7 +17,7 @@ exports.getAllBootCamps = asyncHandler(async (req, res, next) => {
     match => `$${match}`
   );
 
-  querry = BootCamp.find(JSON.parse(querryStr));
+  querry = BootCamp.find(JSON.parse(querryStr)).populate("courses");
   // select querry
   if (req.query.select) {
     const fileds = req.query.select.split(",").join(" ");
@@ -144,12 +144,13 @@ exports.updateBootCamp = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/bootcamps/:id
 // @access  Private
 exports.deleteBootCamp = asyncHandler(async (req, res, next) => {
-  const bootCamp = await BootCamp.findByIdAndDelete(req.params.id);
+  const bootCamp = await BootCamp.findById(req.params.id);
 
   if (!bootCamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+  bootCamp.remove();
   res.status(200).json({ success: true, data: "Bootcamp deleted" });
 });

@@ -4,6 +4,7 @@ const colors = require("colors");
 const morgan = require("morgan");
 
 const bootCamps = require("./routes/bootcamps");
+const courses = require("./routes/courses");
 const errorHandler = require("./middleware/error");
 
 const connectDB = require("./config/db");
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === "development") {
 
 // set routers
 app.use("/api/v1/bootcamps", bootCamps);
+app.use("/api/v1/courses", courses);
 
 //error middleware
 app.use(errorHandler);
