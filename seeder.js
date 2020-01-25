@@ -28,7 +28,7 @@ const courses = JSON.parse(
 const saveData = async () => {
   try {
     await Bootcamp.create(bootCamps);
-    // await Course.create(courses);
+    await Course.create(courses);
     console.log("Bootcamps loaded".green.inverse);
     process.exit();
   } catch (error) {
