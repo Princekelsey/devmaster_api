@@ -7,6 +7,7 @@ const morgan = require("morgan");
 
 const bootCamps = require("./routes/bootcamps");
 const courses = require("./routes/courses");
+const userAuth = require("./routes/auth");
 const errorHandler = require("./middleware/error");
 
 const connectDB = require("./config/db");
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // set routers
 app.use("/api/v1/bootcamps", bootCamps);
 app.use("/api/v1/courses", courses);
+app.use("/api/v1/auth", userAuth);
 
 //error middleware
 app.use(errorHandler);
