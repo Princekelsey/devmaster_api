@@ -49,4 +49,9 @@ USER_SCHEMA.methods.signJWTandReturn = function() {
   });
 };
 
+// compare login password with hashed password in database
+USER_SCHEMA.methods.matchPassword = async function(loginPassword) {
+  return await bycrpt.compare(loginPassword, this.password);
+};
+
 module.exports = mongoose.model("User", USER_SCHEMA);

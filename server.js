@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const fileUpload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv").config({ path: "./config/config.env" });
 const colors = require("colors");
 const morgan = require("morgan");
@@ -17,6 +18,7 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 // dev logging middleware
 if (process.env.NODE_ENV === "development") {
