@@ -2,26 +2,24 @@ const ErrorResponse = require("../utilis/errorResponse");
 const asyncHandler = require("../middleware/async");
 const User = require("../models/User");
 
+// get token from model,create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.signJWTandReturn();
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
   };
 
   if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
 
-  res
-    .status(statusCode)
-    .cookie("token", token, options)
-    .json({
-      success: true,
-      token
-    });
+  res.status(statusCode).cookie("token", token, options).json({
+    success: true,
+    token,
+  });
 };
 
 // @desc    Register User
@@ -34,7 +32,7 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     name,
     email,
     password,
-    role
+    role,
   });
   sendTokenResponse(user, 200, res);
 });
@@ -63,4 +61,17 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
   }
 
   sendTokenResponse(user, 200, res);
+});
+
+// @desc    Current User
+// @route   POST /api/v1/auth/me
+// @access  private
+
+exports.currentUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
 });
