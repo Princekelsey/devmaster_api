@@ -8,7 +8,7 @@ const errorHandler = (err, req, res, next) => {
 
   // mongoose bad ObjectId error
   if (err.name === "CastError") {
-    const message = `Bootcamp not found with id of ${err.value}`;
+    const message = `Resource not found with id of ${err.value}`;
     error = new ErrorResponse(message, 404);
   }
 
@@ -20,13 +20,13 @@ const errorHandler = (err, req, res, next) => {
 
   // mongoose validation error
   if (err.name === "ValidationError") {
-    const message = Object.values(err.errors).map(val => val.message);
+    const message = Object.values(err.errors).map((val) => val.message);
     error = new ErrorResponse(message, 400);
   }
 
   res.status(error.statusCode || 500).json({
     sucess: false,
-    error: error.message || "Server Error"
+    error: error.message || "Server Error",
   });
 };
 

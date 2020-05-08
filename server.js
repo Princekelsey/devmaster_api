@@ -10,6 +10,7 @@ const bootCamps = require("./routes/bootcamps");
 const courses = require("./routes/courses");
 const userAuth = require("./routes/auth");
 const users = require("./routes/users");
+const reviews = require("./routes/reviews");
 const errorHandler = require("./middleware/error");
 
 const connectDB = require("./config/db");
@@ -37,6 +38,7 @@ app.use("/api/v1/bootcamps", bootCamps);
 app.use("/api/v1/courses", courses);
 app.use("/api/v1/auth", userAuth);
 app.use("/api/v1/users", users);
+app.use("/api/v1/reviews", reviews);
 
 //error middleware
 app.use(errorHandler);
