@@ -52,13 +52,40 @@ exports.addReview = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp) {
     return next(
-      new ErrorResponse(`No bootcamp with ${req.params.id} found`, 404)
+      new ErrorResponse(`No bootcamp with ${req.params.bootcampId} found`, 404)
     );
   }
 
   const review = await Review.create(req.body);
 
   res.status(201).json({
+    success: true,
+    data: review,
+  });
+});
+
+// @desc    Update  review
+// @route   PUT /api/v1/reviews/:id
+// @access  private
+exports.updateReview = asyncHandler(async (req, res, next) => {
+  let review = await Review.findById(req.params.id);
+
+  if (!review) {
+    return next(
+      new ErrorResponse(`No review with ${req.params.id} found`, 404)
+    );
+  }
+
+  if (review.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(new ErrorResponse(`Not authorized`, 401));
+  }
+
+  review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
     success: true,
     data: review,
   });
