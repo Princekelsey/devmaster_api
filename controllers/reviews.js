@@ -80,6 +80,7 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Not authorized`, 401));
   }
 
+  // updated review
   review = await Review.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
